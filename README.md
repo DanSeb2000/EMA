@@ -1,4 +1,5 @@
-#Versión 1.2
+Versión 1.2
+
 
 A hacer:
 
