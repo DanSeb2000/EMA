@@ -67,6 +67,10 @@ int segundos = 0;
 void setup() {
   Serial.begin(9600);
   
+  //caracteres
+  lcd.createChar (0, grado);
+  lcd.createChar (1, acentoo);
+  
   //Config del LCD
   lcd.begin(16, 2);
   lcd.home ();
@@ -120,6 +124,7 @@ void setup() {
     
   }
   Ethernet.begin(mac, ip);
+  /*
   Serial.print("IP: ");
   for (byte B = 0; B < 4; B++)   
   {
@@ -149,6 +154,11 @@ void setup() {
   }
   Serial.println();
   
+  Serial.print("IP Servidor: ");
+  Serial.print("172.23.0.12");
+  Serial.println();
+  */
+  
   //Iniciado
   lcd.clear();
   lcd.setCursor ( 0, 0 );
@@ -158,38 +168,96 @@ void setup() {
   lcd.print("Bienvenido a EAM");
   delay (2000);
 
-  //caracteres
-  lcd.createChar (0, grado);
-  lcd.createChar (1, acentoo);
 
 }
 
 void loop() {
   //Temperatura
-  float humedad = dht.readHumidity();
-  float temperatura = dht.readTemperature();
+  float tempf = leer_temp();
   
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Temperatura:");
   lcd.setCursor(0, 1);
-  lcd.print(temperatura);
+  lcd.print(tempf);
   lcd.print(" C");
   lcd.write((byte)0);
   delay (3000);
   
   //Humedad
+  float humf = leer_hum();
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Humedad:");
   lcd.setCursor(0, 1);
-  lcd.print(humedad);
+  lcd.print(humf);
   lcd.print(" RH");
   delay (3000);
   
   //Presion
+  
   char estado;
   double P, T;
+  double presionf = leer_pres(P, T, estado);
+  
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Presi");
+  lcd.write((byte)1);
+  lcd.print("n:");
+  lcd.setCursor(0, 1);
+  lcd.print(presionf);
+  lcd.print(" hPa");
+  delay (3000);
+
+  //Viento
+  float v1 = 0;
+  float vientof = leer_viento(v1);
+  
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Velocidad viento:");
+  lcd.setCursor(0, 1);
+  lcd.print(vientof);
+  lcd.print(" Km/h");
+  delay (3000);
+  
+  if (minutos < 25){
+    //Serial.print ("Ha(n) pasado: ");
+    //Serial.println (minutos);
+    segundos = 12 * minutos;
+    minutos = minutos + 1;
+    //Serial.print ("En total ");
+    //Serial.print (segundos);
+    //Serial.println (" segundo(s)");
+  } else {
+    //Serial.print ("LLEGADA: ");
+    //Serial.println (minutos);
+    segundos = 12 * minutos;
+    //Serial.print ("En total ");
+    //Serial.print (segundos);
+    //Serial.println (" segundo(s)");
+    minutos = 1;
+
+    almacen_temp();
+    almacen_hum();
+    almacen_pres();
+    almacen_viento();
+  }
+}
+
+float leer_temp(){
+  float temperatura = dht.readTemperature();
+  return temperatura;
+}
+
+float leer_hum(){
+  float humedad = dht.readHumidity();
+  return humedad;
+}
+
+double leer_pres(char estado, double P, double T){
+  
 
   estado = bmp180.startPressure(3);
   if (estado != 0) {
@@ -200,45 +268,30 @@ void loop() {
     }
   }
   
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Presi");
-  lcd.write((byte)1);
-  lcd.print("n:");
-  lcd.setCursor(0, 1);
-  lcd.print(P);
-  lcd.print(" hPa");
-  delay (3000);
+  return P;
+}
 
-  //Viento
-  float v1 = 0;
-  float veloc1 = 0;
+float leer_viento(float v1){
+
+  float veloc1;
   v1 = analogRead(0);
   veloc1 = v1 * 0.190;
-  
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Velocidad viento:");
-  lcd.setCursor(0, 1);
-  lcd.print(veloc1);
-  lcd.print(" Km/h");
-  delay (3000);
-  
-  if (minutos < 25){
-    Serial.print ("Ha(n) pasado: ");
-    Serial.println (minutos);
-    segundos = 12 * minutos;
-    minutos = minutos + 1;
-    Serial.print ("En total ");
-    Serial.print (segundos);
-    Serial.println (" segundo(s)");
-  } else {
-    Serial.print ("LLEGADA: ");
-    Serial.println (minutos);
-    segundos = 12 * minutos;
-    Serial.print ("En total ");
-    Serial.print (segundos);
-    Serial.println (" segundo(s)");
-    minutos = 1;
-  }
+  return veloc1;
 }
+
+int almacen_temp(){
+  
+}
+
+int almacen_hum(){
+  
+}
+
+int almacen_pres(){
+  
+}
+
+int almacen_viento(){
+  
+}
+
