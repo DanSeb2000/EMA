@@ -1,4 +1,4 @@
-Versión 1.2
+Versión 1.3 Alpha
 
 
 A hacer:
@@ -8,4 +8,4 @@ A hacer:
 
 -Terminar conexión a MySQL.
 
--Quitar variables de depuración
+-Quitar variables de depuración.
